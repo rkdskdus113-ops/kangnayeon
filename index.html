@@ -600,10 +600,10 @@
           <div class="project-item" onclick="playDriveVideo('https://drive.google.com/file/d/1GciJbOMBnkCcVMpUmmxPT-nUhWu-tFi4/preview')">
             <button class="project-more-btn" onclick="event.stopPropagation(); openProjectOverview('overview2.jpg')">MORE</button>
           </div>
-          <div class="project-item" onclick="playVideo('집.mp4')">
+          <div class="project-item" onclick="playDriveVideo('https://drive.google.com/file/d/1-pZn6ZHGZSCDYwqMAxxzZ_8qXCgru1_A/preview')">
             <button class="project-more-btn" onclick="event.stopPropagation(); openProjectOverview('overview3.jpg')">MORE</button>
           </div>
-          <div class="project-item" onclick="playVideo('FOOH광고.mp4')">
+          <div class="project-item" onclick="playDriveVideo('https://drive.google.com/file/d/17ZiYBVs_G-L7_YqaO4k-UXGa-ZbEb2QP/preview')">
             <button class="project-more-btn" onclick="event.stopPropagation(); openMultipleOverview(['overview4.jpg', 'overview4-2.jpg'])">MORE</button>
           </div>
         </div>
@@ -730,13 +730,26 @@ let currentSection = 'hero'; // 현재 있는 섹션 추적
 function pauseCurrentVideo() {
   const container = document.getElementById('videoPlayer');
   const currentVideo = container.querySelector('video');
+  const currentIframe = container.querySelector('iframe');
   
   if (currentVideo) {
     currentVideo.pause();
     currentVideo.currentTime = 0; // 비디오를 처음으로 되돌림
     console.log('✅ 비디오 정지 및 초기화 완료');
-  } else {
-    console.log('❌ 재생 중인 비디오가 없음');
+  }
+  
+  if (currentIframe) {
+    // iframe을 새로고침하여 정지 (구글 드라이브는 직접 제어가 어려움)
+    const src = currentIframe.src;
+    currentIframe.src = '';
+    setTimeout(() => {
+      currentIframe.src = src;
+    }, 100);
+    console.log('✅ iframe 새로고침 완료');
+  }
+  
+  if (!currentVideo && !currentIframe) {
+    console.log('❌ 재생 중인 미디어가 없음');
   }
 }
 
