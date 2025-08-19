@@ -575,7 +575,10 @@
 </div>
 
 <header class="hero" id="hero">
-  <iframe src="https://drive.google.com/file/d/1GH2BA6VBmHV6lN00j1ZplVBnAbgHtHFI/preview" width="100%" height="100%" allow="autoplay" style="border: none; position: absolute; top: 0; left: 0; z-index: 0;"></iframe>
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="1페이지.mp4" type="video/mp4">
+    비디오를 재생할 수 없습니다.
+  </video>
 </header>
 
 <section id="portfolio">
@@ -786,6 +789,12 @@ function initScrollObserver() {
         console.log('섹션 이동:', previousSection, '→', sectionId);
         
         if (sectionId === 'hero') {
+          // Hero 섹션으로 이동할 때마다 비디오를 처음부터 재시작
+          const heroVideo = document.querySelector('.hero-video');
+          if (heroVideo) {
+            heroVideo.currentTime = 0;
+            heroVideo.play();
+          }
           changeNavColor(false);
           setActiveNavButton(0);
         } else if (sectionId === 'portfolio') {
@@ -852,5 +861,223 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function playVideo(path) {
+    const container = document.getElementById('videoPlayer');
+    const placeholder = document.getElementById('videoPlaceholder');
+    const projectContent = document.querySelector('.project-content');
+    
+    // 기존 비디오 제거
+    const existingVideo = container.querySelector('video');
+    if (existingVideo) {
+      existingVideo.remove();
+    }
+    
+    // placeholder 숨기기
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+    
+    // 컨테이너 및 레이아웃 초기화
+    container.classList.remove('vertical');
+    projectContent.classList.remove('vertical-layout');
+    
+    // 기본 스타일 복원
+    container.style.width = '1070px';
+    container.style.height = '600px';
+    container.style.backgroundColor = '#2e5639';
+    container.style.borderColor = '#2e5639';
+    container.style.margin = '50px 0 0 0';
+    container.style.position = 'static';
+    container.style.left = 'auto';
+    container.style.top = 'auto';
+    container.style.transform = 'none';
+    container.style.zIndex = 'auto';
+    
+    // 새 비디오 요소 생성
+    const video = document.createElement('video');
+    video.src = path;
+    video.controls = true;
+    video.autoplay = true;
+    video.style.width = '100%';
+    video.style.height = '100%';
+    
+    // 비디오 메타데이터 로드 시 컨테이너 크기 조정
+    video.addEventListener('loadedmetadata', function() {
+      const videoWidth = this.videoWidth;
+      const videoHeight = this.videoHeight;
+      const aspectRatio = videoWidth / videoHeight;
+      
+      console.log(`비디오 크기: ${videoWidth}x${videoHeight}, 비율: ${aspectRatio.toFixed(2)}`);
+      
+      if (aspectRatio < 1) {
+        // 세로 영상인 경우 - 폴더는 고정, 비디오만 가운데로
+        const maxHeight = 600;
+        const calculatedWidth = Math.round(maxHeight * aspectRatio);
+        
+        // 부모에 vertical-layout 클래스 추가 (absolute positioning 활성화)
+        projectContent.classList.add('vertical-layout');
+        
+        // 세로 영상용 스타일 적용
+        video.style.objectFit = 'contain';
+        container.classList.add('vertical');
+        
+        container.style.width = (calculatedWidth + 8) + 'px';
+        container.style.height = (maxHeight + 8) + 'px';
+        container.style.backgroundColor = '#000';
+        container.style.borderColor = '#000';
+        
+        // absolute positioning은 CSS에서 처리됨
+        // JavaScript에서는 기본값만 설정
+        container.style.margin = '0';
+        
+        console.log(`✅ 세로 영상 처리 완료 - 폴더 고정, 비디오만 가운데 정렬, 크기: ${calculatedWidth + 8}x${maxHeight + 8}`);
+      } else {
+        // 가로 영상인 경우 - 기존 레이아웃 유지
+        video.style.objectFit = 'cover';
+        container.classList.remove('vertical');
+        projectContent.classList.remove('vertical-layout');
+        
+        container.style.width = '1070px';
+        container.style.height = '600px';
+        container.style.backgroundColor = '#2e5639';
+        container.style.borderColor = '#2e5639';
+        container.style.margin = '50px 0 0 0';
+        container.style.position = 'static';
+        container.style.left = 'auto';
+        container.style.top = 'auto';
+        container.style.transform = 'none';
+        container.style.zIndex = 'auto';
+        
+        console.log('✅ 가로 영상 처리 완료 - 기존 레이아웃 유지');
+      }
+    });
+    
+    // 비디오 요소를 컨테이너에 추가
+    container.appendChild(video);
+  }
 
+  // 프로젝트 개요 이미지를 새창으로 여는 함수 (간단한 방법)
+  function openProjectOverview(imagePath) {
+    // 간단한 방법으로 새 창 열기
+    const newWindow = window.open('about:blank', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    
+    if (newWindow) {
+      newWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>프로젝트 개요</title>
+          <style>
+            body {
+              margin: 0;
+              padding: 20px;
+              background-color: #f9f6dc;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              font-family: sans-serif;
+            }
+            img {
+              max-width: 100%;
+              max-height: 90vh;
+              border: 3px solid #2e5639;
+              border-radius: 10px;
+              box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+            .close-btn {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background-color: #2e5639;
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              border-radius: 20px;
+              cursor: pointer;
+              font-size: 14px;
+            }
+          </style>
+        </head>
+        <body>
+          <button class="close-btn" onclick="window.close()">닫기</button>
+          <img src="${imagePath}" alt="프로젝트 개요" />
+        </body>
+        </html>
+      `);
+      newWindow.document.close();
+    } else {
+      alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.');
+    }
+  }
 
+  // 여러 개의 프로젝트 개요 이미지를 새창으로 여는 함수 (스크롤 스냅 추가)
+  function openMultipleOverview(imagePaths) {
+    const newWindow = window.open('about:blank', '_blank', 'width=900,height=700,resizable=yes');
+    
+    if (newWindow) {
+      newWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>프로젝트 개요</title>
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              background-color: #f9f6dc;
+              font-family: sans-serif;
+              scroll-behavior: smooth;
+              scroll-snap-type: y mandatory;
+              overflow-y: auto;
+              height: 100vh;
+            }
+            .image-container {
+              height: 100vh;
+              scroll-snap-align: start;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 20px;
+              box-sizing: border-box;
+            }
+            img {
+              max-width: 90%;
+              max-height: 90%;
+              border: 3px solid #2e5639;
+              border-radius: 10px;
+              object-fit: contain;
+            }
+            .close-btn {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background-color: #2e5639;
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              border-radius: 20px;
+              cursor: pointer;
+              font-size: 14px;
+              z-index: 1000;
+            }
+          </style>
+        </head>
+        <body>
+          <button class="close-btn" onclick="window.close()">닫기</button>
+          ${imagePaths.map((imagePath, index) => `
+            <div class="image-container">
+              <img src="${imagePath}" alt="프로젝트 개요 ${index + 1}" />
+            </div>
+          `).join('')}
+        </body>
+        </html>
+      `);
+      newWindow.document.close();
+    } else {
+      alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.');
+    }
+  }
+</script>
+</body>
+</html>
+      
