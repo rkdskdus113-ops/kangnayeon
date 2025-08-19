@@ -267,6 +267,13 @@
       display: block;
     }
 
+    .video-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
     /* 세로 영상일 때 비디오 스타일 개선 */
     .video-container.vertical video {
       object-fit: contain !important; /* fill 대신 contain 사용으로 비율 유지 */
@@ -587,7 +594,7 @@
     <div class="project-content">
       <div class="projects-column">
         <div class="projects">
-          <div class="project-item" onclick="playVideo('럭키밀.mp4')">
+          <div class="project-item" onclick="playDriveVideo('https://drive.google.com/file/d/1GH2BA6VBmHV6lN00j1ZplVBnAbgHtHFI/preview')">
             <button class="project-more-btn" onclick="event.stopPropagation(); openProjectOverview('overview1.jpg')">MORE</button>
           </div>
           <div class="project-item" onclick="playVideo('영유아안전영상.mp4')">
@@ -860,15 +867,68 @@ document.addEventListener('DOMContentLoaded', () => {
     aboutObserver.observe(aboutSection);
   }
 
+  // 구글 드라이브 iframe 비디오 재생 함수 (새로 추가)
+  function playDriveVideo(driveUrl) {
+    const container = document.getElementById('videoPlayer');
+    const placeholder = document.getElementById('videoPlaceholder');
+    const projectContent = document.querySelector('.project-content');
+    
+    // 기존 비디오/iframe 제거
+    const existingVideo = container.querySelector('video');
+    const existingIframe = container.querySelector('iframe');
+    if (existingVideo) {
+      existingVideo.remove();
+    }
+    if (existingIframe) {
+      existingIframe.remove();
+    }
+    
+    // placeholder 숨기기
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+    
+    // 컨테이너 및 레이아웃 초기화
+    container.classList.remove('vertical');
+    projectContent.classList.remove('vertical-layout');
+    
+    // 기본 스타일 복원
+    container.style.width = '1070px';
+    container.style.height = '600px';
+    container.style.backgroundColor = '#2e5639';
+    container.style.borderColor = '#2e5639';
+    container.style.margin = '50px 0 0 0';
+    container.style.position = 'static';
+    container.style.left = 'auto';
+    container.style.top = 'auto';
+    container.style.transform = 'none';
+    container.style.zIndex = 'auto';
+    
+    // 새 iframe 요소 생성
+    const iframe = document.createElement('iframe');
+    iframe.src = driveUrl;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.allow = 'autoplay';
+    
+    // iframe 요소를 컨테이너에 추가
+    container.appendChild(iframe);
+  }
+
   function playVideo(path) {
     const container = document.getElementById('videoPlayer');
     const placeholder = document.getElementById('videoPlaceholder');
     const projectContent = document.querySelector('.project-content');
     
-    // 기존 비디오 제거
+    // 기존 비디오/iframe 제거
     const existingVideo = container.querySelector('video');
+    const existingIframe = container.querySelector('iframe');
     if (existingVideo) {
       existingVideo.remove();
+    }
+    if (existingIframe) {
+      existingIframe.remove();
     }
     
     // placeholder 숨기기
@@ -1080,4 +1140,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-      
